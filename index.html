@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+
+<html>
+  <head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  	<title>npm on IPFS</title>
+    <script
+			  src="https://code.jquery.com/jquery-3.3.1.min.js"
+			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			  crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var loadPackage = function(){
+        var package = window.location.hash.substr(1)
+        if(package.length) {
+          jQuery.getJSON('https://cors-anywhere.herokuapp.com/https://registry.js.ipfs.io/'+package, function(data){
+            $('#result').show()
+            console.log(data)
+            $('#name').html(data['name'])
+
+            var versions = Object.keys(data.versions)
+            var versionNubmer = versions[versions.length - 1];
+            var version = data.versions[versionNubmer]
+            console.log(versionNubmer)
+            console.log(version)
+
+            $('#version').html(versionNubmer)
+            $('#cid').html(version['dist']['cid']).attr('href', 'https://explore.ipld.io/#/explore/'+version['dist']['cid'])
+
+          })
+        }
+      }
+
+      $(window).on('hashchange', loadPackage);
+
+      loadPackage()
+    </script>
+  </head>
+
+  <body>
+    <h1>npm on IPFS</h1>
+    <form action="/" id="search-form"
+      onsubmit="$('#result').hide(); location.href=this.action+'#'+this.s.value; return false;">
+      <input type="text" id="search-input" name="s" placeholder="package name" x-webkit-speech>
+      <input type="submit" name="" value="Go">
+    </form>
+
+    <div id='result' style='display:none;'>
+      <h2>
+        <span id='name'></span>
+        (<small id='version'></small>)
+      </h2>
+      CID: <a href='#' id='cid' target='_blank'></a>
+    </div>
+  <body>
+</html>
